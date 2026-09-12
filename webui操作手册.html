@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -163,9 +163,9 @@
       <summary>1. 启动</summary>
       <div class="body">
         <h3>方式一：双击</h3>
-        <pre>F:\MIMO-Space\PEQ-WebUI\启动PEQ-WebUI.cmd</pre>
+        <pre><PEQ-WebUI>\启动PEQ-WebUI.cmd</pre>
         <h3>方式二：PowerShell</h3>
-        <pre>cd F:\MIMO-Space\PEQ-WebUI
+        <pre>cd <PEQ-WebUI>
 .\start-webui.ps1</pre>
         <p>或：</p>
         <pre>py mixer_web.py --port 9100</pre>
@@ -185,7 +185,7 @@
         <ul>
           <li>APO 已安装 / 未安装</li>
           <li>配置已托管 / 未接管</li>
-          <li>设备挂载检测（如 FiiO）</li>
+          <li>设备挂载检测（默认按 `Device: Fiio` 关键字，可配置）</li>
           <li>管理员模式 / 普通模式</li>
           <li>当前激活预设 / 直通</li>
         </ul>
@@ -262,7 +262,7 @@
         </ul>
         <div class="warn">
           需要本机存在 AutoEq 数据目录。默认查找
-          <code>F:\MIMO-Space\AutoEq-4.1.2\AutoEq-4.1.2</code>，
+          <code><PEQ-WebUI>/../AutoEq-4.1.2/AutoEq-4.1.2</code>，
           可用环境变量 <code>AUTOEQ_ROOT</code> 覆盖。
         </div>
       </div>
@@ -288,7 +288,7 @@
       <div class="body">
         <table>
           <tr><th>内容</th><th>路径</th></tr>
-          <tr><td>项目根</td><td><code>F:\MIMO-Space\PEQ-WebUI\</code></td></tr>
+          <tr><td>项目根</td><td><code><PEQ-WebUI>\</code></td></tr>
           <tr><td>预设文件</td><td><code>apo-presets\*.txt</code></td></tr>
           <tr><td>预设清单 / 排序</td><td><code>apo-presets\presets.json</code> / <code>preset-order.json</code></td></tr>
           <tr><td>激活文件</td><td><code>apo-config\hl-active.txt</code></td></tr>
@@ -304,7 +304,7 @@
       <summary>8. 首次接管（仅未托管时）</summary>
       <div class="body">
         <p>若顶部显示「配置未托管」，说明 APO 仍读 Program Files 原配置。用<strong>管理员 PowerShell</strong> 执行一次：</p>
-        <pre>cd F:\MIMO-Space\PEQ-WebUI
+        <pre>cd <PEQ-WebUI>
 py -c "from apo_backend import ApoBackend; a=ApoBackend(); a.set_auto_install_enabled(True); print(a.install(by='admin'))"</pre>
         <p>完成后刷新页面，状态应变为「配置已托管」。之后日常使用不再需要管理员。</p>
         <div class="warn">

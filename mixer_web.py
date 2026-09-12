@@ -502,9 +502,8 @@ class MixerHTTPHandler(BaseHTTPRequestHandler):
         sanitize_enabled = body.get('sanitize_bands', True) in (True, 1, '1', 'true', 'on', 'True')
         # Imported headphone raw curves are already reference-band aligned.
         # For headphone-to-headphone fitting, min_mean_error would subtract real
-        # broad tonal differences (e.g. HD490 Pro's average level relative to
-        # R70X) and make the fit look "a few dB short", so keep it off by default
-        # for this target category.
+        # broad tonal differences between models and make the fit look short,
+        # so keep it off by default for this target category.
         default_min_mean_error = target.get('category') != 'headphone'
         smooth_enabled = body.get('smooth', True) in (True, 1, '1', 'true', 'on', 'True')
         sharpness_penalty = body.get('sharpness_penalty', True) in (True, 1, '1', 'true', 'on', 'True')

@@ -1,20 +1,4 @@
-# name: 纯净调音
-# device: dt900prox
-# target: sony-mdr-mv1-oratory-原始频响
-# ui_state: {"auto_fit_enabled":false,"legend":{"device":true,"target":true,"eq":true,"equalized":true,"applied":false,"draft":false,"preview":false}}
-# generated: 2026-09-12T09:45:42 by mixer_web
-
-Device: Fiio
-Preamp: -5.5518 dB
-
-Filter 1: ON PK Fc 101.6 Hz Gain 2.7 dB Q 0.432
-Filter 2: ON PK Fc 1376.16 Hz Gain 1.1 dB Q 2.613
-Filter 3: ON PK Fc 2082.81 Hz Gain -2.34 dB Q 1.527
-Filter 4: ON PK Fc 2792.44 Hz Gain 2.15 dB Q 3.226
-Filter 5: ON PK Fc 4044.94 Hz Gain 4.85 dB Q 4
-Filter 6: ON PK Fc 4758.83 Hz Gain -5.14 dB Q 3.6
-Filter 7: ON PK Fc 5910.42 Hz Gain 1.47 dB Q 4
-Filter 8: ON PK Fc 8180.78 Hz Gain 4.23 dB Q 2.289
-Filter 9: ON PK Fc 11186.3 Hz Gain 3.16 dB Q 0.896
-Filter 10: ON PK Fc 11634.2 Hz Gain -6 dB Q 2.58
-Filter 11: ON LS Fc 60 Hz Gain 3 dB Q 0.707
+﻿# name: Pure (bypass)
+# device:
+# notes: Template bypass preset. Device: matches all endpoints when left as all / empty scope rules depend on APO.
+Device: all

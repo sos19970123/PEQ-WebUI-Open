@@ -1,2 +1,4 @@
-# Managed by headphone-lab mixer_web. 原 Peace 配置见 config.txt.bak-headphonelab
+﻿# Managed by peq-webui mixer_web.
+# Original third-party configs are not redistributed. See NOTICE.md.
 Include: hl-active.txt
+

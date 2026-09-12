@@ -33,7 +33,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_PRESET_DIR = os.path.join(BASE_DIR, 'apo-presets')
 DEFAULT_APO_SCOPE = 'Fiio'
 MANAGED_MARKER = '# Managed by peq-webui mixer_web.'
-# 旧版 marker（headphone-lab 时代）仅作兼容识别，不再写入
+# Legacy Managed marker kept only for recognition of older configs; not written anymore
 LEGACY_MANAGED_MARKER = '# Managed by headphone-lab mixer_web.'
 MANAGED_INCLUDE = 'Include: hl-active.txt'
 REGISTRY_KEY_PATH = r'SOFTWARE\EqualizerAPO'

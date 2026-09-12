@@ -1,22 +1,2 @@
-# name: R70X · MSR7B拟合（调整后）
-# device: r70x
-# target: audio-technica-ath-msr7b-原始频响
-# fit: {"fmin":100,"fmax":12000,"max_gain_db":12,"max_q":6,"engine":"quick","auto_shelf":false,"hi_fidelity":true,"smooth":false,"sharpness_penalty":false,"sanitize_bands":true}
-# ui_state: {"auto_fit_enabled":false,"legend":{"device":true,"target":true,"eq":true,"equalized":true,"applied":false,"draft":false,"preview":true}}
-# note: 还行，r70x单元本身补足msr7的低频，增加40的低架，拟合尽可能模拟了极高频的高峰，极高峰的两端增益减少q值，避免尖峰。牺牲中频的贴耳人声，获得更亮更年轻的女声表现
-# generated: 2026-09-12T09:30:20 by mixer_web
+﻿# peq-webui direct bypass
 
-Device: Fiio
-Preamp: -6.9109 dB
-
-Filter 1: ON PK Fc 124.47 Hz Gain 2.22 dB Q 0.853
-Filter 2: ON PK Fc 255.22 Hz Gain -5.58 dB Q 1.088
-Filter 3: ON PK Fc 1202 Hz Gain 1.01 dB Q 0.956
-Filter 4: ON PK Fc 3678.81 Hz Gain -8.14 dB Q 1.728
-Filter 5: ON PK Fc 4387.39 Hz Gain 7.36 dB Q 2.756
-Filter 6: ON PK Fc 5161.72 Hz Gain 2.05 dB Q 2.177
-Filter 7: ON PK Fc 8180.78 Hz Gain 6.7 dB Q 5.4
-Filter 8: ON PK Fc 9973.99 Hz Gain -10.91 dB Q 2.341
-Filter 9: ON PK Fc 10160.4 Hz Gain 7 dB Q 3
-Filter 10: ON PK Fc 11953.6 Hz Gain 8.6 dB Q 3
-Filter 11: ON LS Fc 40 Hz Gain 4.7 dB Q 0.67

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -100,7 +100,7 @@
                 <tr>
                   <td>oratory 基准</td>
                   <td>GRAS 45BC-10（KEMAR 型 HATS）；早前 GRAS 43AG-7 / 43AC（711 类）</td>
-                  <td>DT 900 Pro X ★、ATH-R70X ★、ATH-R70XA、JVC HA-FW01 / FW10000 / FW1800、ATH-MSR7b（导入目标）</td>
+                  <td>示例曲线库（来源见 NOTICE.md；可用 AutoEq/CSV 自行扩充）</td>
                   <td>oratory1990 / AutoEq 校准基准，与 Harman 目标同源；校准首选。部分 JVC 老型号使用 GRAS 43AC / 45BC。</td>
                 </tr>
                 <tr>
@@ -112,13 +112,13 @@
                 <tr>
                   <td>711 / IEC 60318-4</td>
                   <td>GRAS KB501x / KB006x 人工耳廓 + IEC 60318-4（“711”）模拟耳</td>
-                  <td>Kuulokenurkka（DT900 Pro X、ATH-R70X）、Auriculares Argentina（ATH-R70X）、Super* Review（DT900 Pro X）</td>
+                  <td>Kuulokenurkka / Auriculares Argentina / Super* Review 等公开源（示例）</td>
                   <td>低成本克隆 rig 普及度高；≥6 kHz 与人口平均偏差较大，做 EQ 时慎用高频段。</td>
                 </tr>
                 <tr>
                   <td>HMS II.3</td>
                   <td>HEAD acoustics HMS II.3 人头模拟器（IEC 60268-7 耳廓 + HRTF 补偿）</td>
-                  <td>InnerFidelity（ATH-R70X、ATH-MSR7 导入目标）、RTINGS 旧版（DT900 Pro X、ATH-R70X、Sennheiser HD 490 Pro / Sony MDR-MV1 导入目标）</td>
+                  <td>InnerFidelity / RTINGS 旧版等公开源（示例）</td>
                   <td>老牌 HATS；与多份历史评测/基线可比。</td>
                 </tr>
                 <tr>
@@ -353,7 +353,7 @@
   <div id="modal-add-preset" class="modal hidden">
     <div class="modal-box">
       <h3>新增预设</h3>
-      <input id="new-preset-name" class="input" placeholder="预设名称，如 DT900 Pro X · Harman">
+      <input id="new-preset-name" class="input" placeholder="预设名称，如 My Headphone · Harman">
       <div class="form-grid">
         <label>绑定设备
           <select id="new-preset-device" class="select"></select>
@@ -471,7 +471,7 @@
       <h3>服务已停止</h3>
       <p>后端进程已退出，本页面已无法继续操作。</p>
       <p class="muted">在本机重新启动：</p>
-      <pre class="code-hint">cd F:\MIMO-Space\PEQ-WebUI
+      <pre class="code-hint">cd <PEQ-WebUI>
 .\start-webui.ps1</pre>
       <p class="muted">或双击 <code>启动PEQ-WebUI.cmd</code>，然后刷新本页面。</p>
       <div class="btn-row right">
