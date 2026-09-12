@@ -5,7 +5,7 @@ mixer_web.py - PEQ WebUI 鍚庣锛圗qualizerAPO 鐗?/ 鏂规 A锛?
 鐗规€?
 - 鍙洃鍚?127.0.0.1:9100銆?
 - 鍚屾簮鎵樼 peq-webui/webui 闈欐€佹枃浠讹紝REST + SSE銆?
-- 鎵€鏈?APO 鍐欓兘鏄師瀛愭枃浠舵浛鎹紝鏃犵淮鎶ゆā寮忋€佹棤 Reaper/8080 渚濊禆銆?
+    # All APO writes are atomic file replaces; no external host/port coupling.
 - 棰勮鍐呭鍞竴鍐欒€呬负鏈悗绔紱鍛婄ず鏉?鍏朵粬杩涚▼涔熷彲鎵ц婵€娲伙紝鏈€鍚庡啓鑰呰耽銆?
 
 杩愯:
