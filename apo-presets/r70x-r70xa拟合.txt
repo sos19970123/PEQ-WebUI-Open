@@ -1,0 +1,21 @@
+# name: R70X ·R70XA拟合
+# device: r70x
+# target: audio-technica-ath-r70xa-原始频响
+# fit: {"fmin":100,"fmax":12000,"max_gain_db":12,"max_q":6,"engine":"precise","auto_shelf":false,"hi_fidelity":false,"smooth":false,"sharpness_penalty":false}
+# ui_state: {"auto_fit_enabled":false,"legend":{"device":true,"target":true,"eq":true,"equalized":true,"applied":false,"draft":false,"preview":false}}
+# note: 人声稍微远离，但不至于msr7b那么离谱。但是节奏组也开始远离，没那么混乱，显得解析上升了一些
+# generated: 2026-08-27T23:54:03 by mixer_web
+
+Device: Fiio
+Preamp: -4.6548 dB
+
+Filter 1: ON PK Fc 179.2 Hz Gain -0.6 dB Q 1.661
+Filter 2: ON PK Fc 344.58 Hz Gain -2.69 dB Q 1.244
+Filter 3: ON PK Fc 1058.98 Hz Gain 1.06 dB Q 2.223
+Filter 4: ON PK Fc 3467.3 Hz Gain 1.29 dB Q 3.787
+Filter 5: ON PK Fc 4165.25 Hz Gain -5.76 dB Q 5.993
+Filter 6: ON PK Fc 4697.63 Hz Gain 1.65 dB Q 6
+Filter 7: ON PK Fc 5603.37 Hz Gain -1.73 dB Q 5.953
+Filter 8: ON PK Fc 6913.65 Hz Gain 4.55 dB Q 3.454
+Filter 9: ON PK Fc 8480.22 Hz Gain 3.16 dB Q 5.993
+Filter 10: ON PK Fc 9139.31 Hz Gain -3.65 dB Q 6

@@ -1,0 +1,32 @@
+# name: DT900 Pro X · 乐园2拟合（ai调整）
+# device: dt900prox
+# target: moondrop-para-ii-原始频响
+# fit: {"fmin":100,"fmax":12000,"max_gain_db":12,"max_q":6,"engine":"precise","auto_shelf":true,"hi_fidelity":false,"smooth":false,"sharpness_penalty":false}
+# ui_state: {"auto_fit_enabled":false,"legend":{"device":true,"target":true,"eq":true,"equalized":true,"applied":false,"draft":false,"preview":false}}
+# note: 这下确实比dt900prox像人，虽然dt900低频更高人声更靠前，但是没有r70x好听。倒不如砍一点中。听大编制也可以
+# note: 2026-09-11 补完 2k 以上(原 10 段滤波器全部 ≤3.1kHz = 半成品,2k 以上完全没拟合):
+# note: - 追加 3500Hz -3.0Q2.5 / 4050Hz +3.0Q3.5 / 5300Hz -5.0Q1.5 / 6200Hz -5.0Q1.6
+# note: - 4050 是"轻填"DT900 的 4k 抵消谷(实测该谷 4 rig 位置一致但深度差 2.8 倍,填满无意义)+3 即可
+# note: - 5300/6200 双段削 DT900 的 5-6.5k 金属峰(原厂该处比自身 500-2k 高 +7~9dB,是"人声抢戏/齿音刺"的来源)
+# note: - 效果:2-6k 残差 3.98→2.75,6-9k 4.49→3.15(未平滑逐点口径)
+# note: - 保守处理:目标跨 rig(Super Review KB006x+711),故只做到 6.5k、削减只做需求的 ~60-70%,9k 以上不动
+# note: - preamp 保持 -2.06(新增段未抬高峰值,峰值 +1.51)
+# generated: 2026-09-12T10:41:00 by mixer_web
+
+Device: Fiio
+Preamp: -1.7071 dB
+
+Filter 1: ON LS Fc 213.61 Hz Gain -3.86 dB Q 0.7
+Filter 2: ON PK Fc 284.65 Hz Gain 0.43 dB Q 2.58
+Filter 3: ON PK Fc 310.86 Hz Gain -2.56 dB Q 1.097
+Filter 4: ON PK Fc 518.98 Hz Gain -0.79 dB Q 1.597
+Filter 5: ON PK Fc 1017.37 Hz Gain 0.69 dB Q 3.332
+Filter 6: ON PK Fc 1336.72 Hz Gain 2.27 dB Q 1.243
+Filter 7: ON PK Fc 1813.53 Hz Gain -0.72 dB Q 4
+Filter 8: ON PK Fc 2149.6 Hz Gain -4.3 dB Q 2.31
+Filter 9: ON PK Fc 2821.42 Hz Gain 0.73 dB Q 4
+Filter 10: ON PK Fc 3072.16 Hz Gain 1.37 dB Q 4
+Filter 11: ON PK Fc 3500 Hz Gain -3 dB Q 2.5
+Filter 12: ON PK Fc 4050 Hz Gain 3 dB Q 3.5
+Filter 13: ON PK Fc 5300 Hz Gain -5 dB Q 1.5
+Filter 14: ON PK Fc 6200 Hz Gain -5 dB Q 1.6

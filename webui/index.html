@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PEQ WebUI · EqualizerAPO</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <!-- Header -->
+    <header class="top-bar">
+      <div class="tb-left">
+        <span class="brand">PEQ WebUI</span>
+        <span class="sub-brand">EqualizerAPO · 多段全局 EQ</span>
+        <span id="status-dot" class="dot dot-offline"></span>
+        <span id="status-text" class="status-text">离线</span>
+        <span id="apo-badges" class="apo-badges"></span>
+      </div>
+      <div class="tb-right">
+        <button id="btn-help" class="btn btn-small" title="快速调出用户操作手册">❓ 帮助</button>
+        <button id="btn-service-restart" class="btn btn-small" title="停止当前后端进程并自动拉起新进程；页面会自动重连，约 3~5 秒">⏻ 重启服务</button>
+        <button id="btn-service-stop" class="btn btn-small btn-danger-outline" title="停止当前后端进程；页面将会断开，需在本机手动启动（start-webui.ps1）">⏹ 停止服务</button>
+      </div>
+    </header>
+
+    <!-- PresetSelector -->
+    <section class="preset-selector">
+      <div id="preset-cards" class="preset-cards"></div>
+      <button id="btn-preset-add" class="btn btn-add-preset">+ 新增预设</button>
+    </section>
+
+    <!-- Main -->
+    <main class="main-grid">
+      <section class="eq-section">
+        <div class="eq-header">
+          <div class="eq-title">
+            <span id="eq-current-preset" class="preset-name">未选择预设</span>
+            <span class="eq-binding-label">绑定设备</span>
+            <select id="device-select" class="select"></select>
+            <span id="device-curve-info" class="device-curve-info"></span>
+<span class="eq-binding-label">目标曲线</span>
+              <select id="target-select-main" class="select"></select>
+              <label class="auto-fit-toggle"><input type="checkbox" id="auto-fit-switch"> 自动拟合</label>
+            <button id="btn-import-curve" class="btn btn-small">导入曲线</button>
+          </div>
+          <div class="eq-header-right">
+<label class="legend-toggle"><input type="checkbox" id="legend-device" checked> <span class="legend-line raw-line"></span> Raw 原始</label>
+<label class="legend-toggle"><input type="checkbox" id="legend-target" checked> <span class="legend-line target-line"></span> Target 目标</label>
+<label class="legend-toggle"><input type="checkbox" id="legend-eq" checked> <span class="legend-line eq-line"></span> Equalizer 均衡器</label>
+<label class="legend-toggle"><input type="checkbox" id="legend-equalized" checked> <span class="legend-line equalized-line"></span> Equalized 均衡后</label>
+<label class="legend-toggle"><input type="checkbox" id="legend-applied"> <span class="legend-line applied-line"></span> 已保存</label>
+<label class="legend-toggle"><input type="checkbox" id="legend-draft"> <span class="legend-line draft-line"></span> 草稿</label>
+<label class="legend-toggle"><input type="checkbox" id="legend-preview"> <span class="legend-line preview-line"></span> 预览</label>
+<div class="display-options">
+  <label class="legend-toggle">归一化
+    <select id="display-normalization" class="select display-select">
+      <option value="none" selected>不归一化</option>
+      <option value="1k">1kHz 置 0dB</option>
+      <option value="ref_band_mean">500Hz-2kHz 平均</option>
+      <option value="min_mean">100Hz-10kHz 平均</option>
+    </select>
+  </label>
+  <label class="legend-toggle">平滑
+    <select id="display-smoothing" class="select display-select">
+      <option value="0" selected>无</option>
+      <option value="0.0416667">1/24 oct</option>
+      <option value="0.0833333">1/12 oct</option>
+      <option value="0.166667">1/6 oct</option>
+    </select>
+  </label>
+  <label class="legend-toggle"><input type="checkbox" id="legend-residual"> <span class="legend-line residual-line"></span> 残差</label>
+  <label class="legend-toggle">残差模式
+    <select id="residual-mode" class="select display-select">
+      <option value="eq" selected>Equalized - Target</option>
+      <option value="raw">Raw - Target</option>
+    </select>
+  </label>
+  <label class="legend-toggle trust-legend" title="残差可信度：9kHz 以上跨 rig 时属测量系统差异，不可验证；同 rig 可参考。">
+    <span class="trust-swatch trust-high">&lt;3k</span>
+    <span class="trust-swatch trust-mid">3-6k</span>
+    <span class="trust-swatch trust-low">6-9k</span>
+    <span class="trust-swatch trust-unver">9k+</span>
+  </label>
+</div>
+          </div>
+        </div>
+
+
+
+        <div class="canvas-wrap">
+        <!-- 测量 rig 策略标准说明（覆盖在频响图上，展开不改变布局） -->
+        <details class="rig-policy">
+          <summary>测量 rig 策略标准 ⓘ <span class="muted">（设备原始频响在不同测量装置下的版本与规则）</span></summary>
+          <div class="rig-policy-body">
+            <p>同一只耳机的“原始频响”在不同测量装置（rig）下测得的结果并不相同：差异主要来自人工耳/人头模型与频率补偿策略。设备下拉框中每个版本 = 某一 rig 的原始频响；<b>选择预设绑定的设备版本后，拟合、比较都应以该 rig 为基准，不要跨 rig 混用</b>。同一设备有多个测量版本时全部列出，便于交叉验证。</p>
+            <table class="rig-table">
+              <thead><tr><th>rig 类别</th><th>代表测量装置 / 标准</th><th>本库收录</th><th>说明</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>oratory 基准</td>
+                  <td>GRAS 45BC-10（KEMAR 型 HATS）；早前 GRAS 43AG-7 / 43AC（711 类）</td>
+                  <td>DT 900 Pro X ★、ATH-R70X ★、ATH-R70XA、JVC HA-FW01 / FW10000 / FW1800、ATH-MSR7b（导入目标）</td>
+                  <td>oratory1990 / AutoEq 校准基准，与 Harman 目标同源；校准首选。部分 JVC 老型号使用 GRAS 43AC / 45BC。</td>
+                </tr>
+                <tr>
+                  <td>5128</td>
+                  <td>Brüel &amp; Kjær Type 5128-B HATS</td>
+                  <td>Sony MDR-Z1R（HypetheSonics 5128）；目标曲线 Diffuse Field 5128 / LMG 5128 等</td>
+                  <td>目前最接近人口平均耳道的 HATS，高频参考价值高。</td>
+                </tr>
+                <tr>
+                  <td>711 / IEC 60318-4</td>
+                  <td>GRAS KB501x / KB006x 人工耳廓 + IEC 60318-4（“711”）模拟耳</td>
+                  <td>Kuulokenurkka（DT900 Pro X、ATH-R70X）、Auriculares Argentina（ATH-R70X）、Super* Review（DT900 Pro X）</td>
+                  <td>低成本克隆 rig 普及度高；≥6 kHz 与人口平均偏差较大，做 EQ 时慎用高频段。</td>
+                </tr>
+                <tr>
+                  <td>HMS II.3</td>
+                  <td>HEAD acoustics HMS II.3 人头模拟器（IEC 60268-7 耳廓 + HRTF 补偿）</td>
+                  <td>InnerFidelity（ATH-R70X、ATH-MSR7 导入目标）、RTINGS 旧版（DT900 Pro X、ATH-R70X、Sennheiser HD 490 Pro / Sony MDR-MV1 导入目标）</td>
+                  <td>老牌 HATS；与多份历史评测/基线可比。</td>
+                </tr>
+                <tr>
+                  <td>Headphone.com rig</td>
+                  <td>Headphones.com 实验室：B&amp;K 5128 + 自研 DF HRTF 基线</td>
+                  <td>Sennheiser HD 800（Headphone.com Legacy 导入目标）</td>
+                  <td>旧 HeadRoom “Legacy” 数据为老式夹具，型号有限；与公司现行 5128 测量不同。</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="muted">数据来源包括 AutoEq 测量库（oratory1990 / RTINGS / Innerfidelity / Kuulokenurkka / Super Review / Auriculares Argentina）以及手动导入曲线；rig 标签优先取自曲线 JSON 的 <code>rig</code> / <code>rig_family</code> 字段。重新生成：<code>py tools/import_measurement_variants.py</code>。</p>
+          </div>
+        </details>
+          <canvas id="eq-canvas" width="1000" height="360"></canvas>
+          <div id="canvas-tooltip" class="canvas-tooltip hidden"></div>
+          <div id="band-popover" class="band-popover hidden"></div>
+
+          <div id="no-curve-tip" class="no-curve-tip hidden">该设备暂无频响数据，可点击“导入曲线”添加。</div>
+        </div>
+
+
+        <div class="eq-bottom">
+          <div class="band-panel">
+            <div class="panel-title">Band 数值表 <span class="muted">（草稿，上限 20）</span></div>
+            <div class="band-table-wrap">
+              <table class="band-table">
+                <thead>
+                  <tr>
+                    <th>启用</th>
+                    <th>类型</th>
+                    <th>频点 (Hz)</th>
+                    <th>增益 (dB)</th>
+                    <th>Q</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="band-tbody"></tbody>
+              </table>
+            </div>
+<div class="manual-eq">
+                <div class="manual-head">
+                  <span class="manual-title">手动滑块调节</span>
+                  <span class="muted">拖动滑块或直接输入数值</span>
+                </div>
+                <div class="manual-select-row">
+                  <label>频段
+                    <select id="manual-band-select" class="select"></select>
+                  </label>
+                  <label>类型
+                    <select id="manual-type-select" class="select"></select>
+                  </label>
+                </div>
+                <div class="slider-grid">
+                  <div class="slider-cell">
+                    <span class="slider-label">频率</span>
+                    <input type="range" id="manual-freq-slider" min="0" max="100" step="0.1" value="50">
+                    <input type="number" id="manual-freq-input" class="input number-sm" min="20" max="20000" step="1" value="1000">
+                  </div>
+                  <div class="slider-cell">
+                    <span class="slider-label">增益</span>
+                    <input type="range" id="manual-gain-slider" min="-15" max="15" step="0.1" value="0">
+                    <input type="number" id="manual-gain-input" class="input number-sm" min="-15" max="15" step="0.1" value="0">
+                  </div>
+                  <div class="slider-cell">
+                    <span class="slider-label">Q</span>
+                    <input type="range" id="manual-q-slider" min="0.1" max="10" step="0.01" value="1">
+                    <input type="number" id="manual-q-input" class="input number-sm" min="0.1" max="10" step="0.01" value="1">
+                  </div>
+                </div>
+              </div>
+            <div class="preamp-row">
+              <label>Preamp (dB)
+                <input id="preamp-input" type="number" step="0.1" min="-30" max="30" value="-6" class="input">
+              </label>
+              <button id="btn-add-band" class="btn btn-small">+ 添加频段</button>
+            </div>
+          </div>
+
+          <div class="tool-panel">
+            <div class="tabs">
+              <button class="tab-btn active" data-tab="import">导入EQ</button>
+              <button class="tab-btn" data-tab="autofit">自动拟合</button>
+<button class="tab-btn" data-tab="autoeq">AutoEq 库</button>
+            </div>
+
+            <!-- ImportTab -->
+            <div id="tab-import" class="tab-panel active">
+              <p class="hint">粘贴 EqualizerAPO / AutoEq / CSV / JSON 文本，解析后紫色曲线预览。</p>
+              <textarea id="import-text" class="textarea" rows="6" placeholder="Filter 1: ON PK Fc 105 Hz Gain -3.5 dB Q 2.0&#10;Preamp: -4.0 dB"></textarea>
+              <div class="btn-row">
+                <button id="btn-export-config" class="btn" title="把当前预设在 EqualizerAPO 中使用的配置（EQ/原声通道）同步到下方导入框，便于复制导出">⇩ 生成当前 APO 配置</button>
+                <button id="btn-parse" class="btn">解析</button>
+                <button id="btn-adopt-import" class="btn btn-primary" disabled>采用为草稿</button>
+              </div>
+              <div id="import-result" class="result-box hidden"></div>
+            </div>
+
+            <!-- AutoFitTab -->
+            <div id="tab-autofit" class="tab-panel">
+              <p class="hint">以绑定设备原始频响为源，自动拟合到目标曲线。</p>
+              <div id="rig-warn" class="rig-warn hidden"></div>
+              <div class="form-grid">
+                <label>目标曲线
+                  <select id="target-select" class="select"></select>
+                </label>
+                <label>滤波器数
+                  <input id="filters-count" type="number" min="1" max="20" value="10" class="input">
+                </label>
+                <label>频带下限 (Hz)
+                  <input id="fmin" type="number" min="20" max="20000" value="100" class="input">
+                </label>
+                <label>频带上限 (Hz)
+                  <input id="fmax" type="number" min="20" max="20000" value="10000" class="input">
+                </label>
+                <label>最大增益 (±dB)
+                  <input id="max-gain" type="number" min="0" max="15" value="6" class="input">
+                </label>
+                <label>最大 Q
+                  <input id="max-q" type="number" min="0.1" max="10" step="0.1" value="3" class="input">
+                </label>
+                <label>引擎
+                    <select id="fit-engine" class="select">
+                      <option value="quick">快速（纯 numpy）</option>
+                      <option value="precise">精确（AutoEq SLSQP）</option>
+                    </select>
+                </label>
+                <label class="checkbox-label">自动高低架（快速/精确，默认关）
+                    <input type="checkbox" id="auto-shelf">
+                </label>
+                <label class="checkbox-label">高频逐点（仅精确引擎）
+                    <input type="checkbox" id="hi-fidelity">
+                </label>
+<label class="checkbox-label">平滑 1/12 oct（快速/精确）
+                      <input type="checkbox" id="smooth" checked>
+                  </label>
+                  <label class="checkbox-label">锐度惩罚（仅快速）
+                      <input type="checkbox" id="sharpness-penalty" checked>
+                  </label>
+                    <label class="checkbox-label">听感清理 sanitize_bands（快速/精确，默认开）
+                        <input type="checkbox" id="sanitize-bands" checked>
+                    </label>
+                    <label class="checkbox-label" title="跨 rig 时默认把 fmax 收敛到 7000Hz；勾选后保持用户 fmax，但 9kHz 以上结果不可验证。">
+                        允许跨 rig 高频（不收敛 fmax）
+                        <input type="checkbox" id="allow-cross-rig-hf">
+                    </label>
+                    <label class="checkbox-label" id="de-rig-label" title="需要同型号耳机在两个 rig 下的实测数据；把目标曲线换算到设备 rig 口径后再拟合。">
+                        去 rig 修正 <span class="muted">（同型号双 rig）</span>
+                        <input type="checkbox" id="de-rig" disabled>
+                    </label>
+                  <label class="checkbox-label">感知加权
+                    <select id="weight-profile" class="select">
+                      <option value="none">关闭</option>
+                      <option value="mild">温和</option>
+                      <option value="mid_centric">中频优先</option>
+                      <option value="hf_conservative">高频保守</option>
+                    </select>
+                  </label>
+                  <label class="checkbox-label">自动段数
+                    <input type="checkbox" id="auto-filters">
+                  </label>
+                  <label>目标 RMS (dB)
+                    <input id="target-rms" type="number" min="0.1" max="5" step="0.1" value="0.5" class="input">
+                  </label>
+              </div>
+              <details class="target-adjust-section">
+                <summary>目标曲线快速整形</summary>
+                <div class="form-grid target-adjust-grid">
+                  <label>EQ Amount (0-1)
+                    <input id="target-amount" type="number" min="0" max="1" step="0.05" value="1" class="input">
+                  </label>
+                  <label>Bass (dB)
+                    <input id="target-bass" type="number" min="-12" max="12" step="0.5" value="0" class="input">
+                  </label>
+                  <label>Treble (dB)
+                    <input id="target-treble" type="number" min="-12" max="12" step="0.5" value="0" class="input">
+                  </label>
+                  <label>Tilt (dB/oct)
+                    <input id="target-tilt" type="number" min="-3" max="3" step="0.1" value="0" class="input">
+                  </label>
+                </div>
+              </details>
+<div id="hf-warning" class="hf-warning hidden">⚠️ 15kHz 以上 RBJ 曲线失真明显，拟合结果可能与实际听感不符。建议将频带上限降到 10kHz 以内。</div>
+              <div class="btn-row">
+                <button id="btn-autofit" class="btn">拟合预览</button>
+                <button id="btn-adopt-autofit" class="btn btn-primary" disabled>采用为草稿</button>
+              </div>
+              <div id="autofit-result" class="result-box hidden"></div>
+            </div>
+<div id="tab-autoeq" class="tab-panel">
+                <p class="hint">搜索本地 AutoEq 源码库中的预计算结果，可把原始频响导入为目标曲线，或一次性导入设备曲线 + PEQ。</p>
+                <div class="btn-row">
+                  <input id="autoeq-search-input" class="input" placeholder="输入耳机名称，如 AKG K371">
+                  <button id="btn-autoeq-search" class="btn">搜索</button>
+                </div>
+                <div id="autoeq-results" class="result-box"></div>
+              </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- APO config preview -->
+      <aside class="config-panel">
+        <div class="panel-title">APO 配置预览</div>
+        <pre id="config-text" class="config-text">请选择预设后查看</pre>
+        <div class="notes-block">
+          <label for="notes-text" class="notes-label">听感记录</label>
+          <textarea id="notes-text" class="textarea notes-textarea" rows="4" placeholder="填写该预设的听感记录，保存后写入预设文件"></textarea>
+          <div class="btn-row notes-actions">
+            <label class="notes-orig-toggle" title="快速在原声通道（无 EQ，Preamp 与 EQ 一致）与 EQ 通道间 AB"><input type="checkbox" id="original-switch"> 原声通道</label>
+            <button id="btn-save-notes" class="btn btn-small">保存听感</button>
+            <span id="notes-status" class="muted"></span>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- ApplyBar -->
+    <footer class="apply-bar">
+      <span id="dirty-indicator" class="dirty-indicator hidden">● 有未保存修改</span>
+      <label class="apply-activate"><input type="checkbox" id="apply-activate-checkbox"> 保存后立即激活</label>
+      <span id="apply-message" class="apply-message"></span>
+<span id="eq-risk" class="eq-risk"></span>
+      <div class="apply-actions">
+        <button id="btn-apply" class="btn btn-primary">保存到预设</button>
+        <button id="btn-discard" class="btn">放弃草稿</button>
+        <button id="btn-revert" class="btn">撤销上次保存</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Modal: preset add -->
+  <div id="modal-add-preset" class="modal hidden">
+    <div class="modal-box">
+      <h3>新增预设</h3>
+      <input id="new-preset-name" class="input" placeholder="预设名称，如 DT900 Pro X · Harman">
+      <div class="form-grid">
+        <label>绑定设备
+          <select id="new-preset-device" class="select"></select>
+        </label>
+      </div>
+      <div class="btn-row right">
+        <button class="btn" data-close-modal>取消</button>
+        <button id="btn-confirm-add-preset" class="btn btn-primary">创建</button>
+      </div>
+    </div>
+  </div>
+<!-- Modal: preset rename -->
+  <div id="modal-rename-preset" class="modal hidden">
+    <div class="modal-box">
+      <h3>重命名预设</h3>
+      <input id="rename-preset-name" class="input" placeholder="输入新的预设名称">
+      <div class="btn-row right">
+        <button class="btn" data-close-modal>取消</button>
+        <button id="btn-confirm-rename-preset" class="btn btn-primary">保存</button>
+      </div>
+    </div>
+  </div>
+<!-- Modal: save before switch -->
+  <div id="modal-save-switch" class="modal hidden">
+    <div class="modal-box">
+      <h3>当前调音未保存</h3>
+      <p id="save-switch-text">切换前是否保存当前调音？</p>
+      <div class="btn-row right">
+        <button id="btn-cancel-switch" class="btn">取消</button>
+        <button id="btn-discard-switch" class="btn">不保存</button>
+        <button id="btn-save-switch" class="btn btn-primary">保存并切换</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: curve import -->
+  <div id="modal-import-curve" class="modal hidden">
+    <div class="modal-box wide">
+      <h3>导入曲线</h3>
+      <div class="form-grid">
+        <label>曲线类型
+          <select id="curve-type" class="select">
+            <option value="device">设备原始频响</option>
+            <option value="target">目标曲线</option>
+          </select>
+        </label>
+        <label>名称
+          <input id="curve-name" class="input" placeholder="例如：我的耳机">
+        </label>
+        <label>类型（设备可选）
+          <select id="curve-kind" class="select">
+            <option value="">不指定</option>
+            <option value="headphone">头戴</option>
+            <option value="iem">入耳/耳塞</option>
+            <option value="earbud">耳塞</option>
+            <option value="speaker">音箱</option>
+          </select>
+        </label>
+          <label id="target-category-field" class="hidden">
+            目标曲线类别
+            <select id="curve-target-category" class="select">
+              <option value="common">音频常用目标曲线</option>
+              <option value="headphone">耳机目标曲线</option>
+            </select>
+          </label>
+      </div>
+      <label class="curve-align-option">
+        <input type="checkbox" id="curve-align" checked>
+        导入时对齐到参考频段（默认 500Hz-2kHz 平均置 0dB，AutoEq/REW 风格）
+      </label>
+      <textarea id="curve-text" class="textarea" rows="6" placeholder="freq,db&#10;20,3.0&#10;100,-1.0&#10;1000,0.0&#10;&#10;或 EqualizerAPO GraphicEQ:&#10;GraphicEQ: 20 -8.6; 21 -8.5; ..."></textarea>
+      <div class="btn-row right">
+        <button class="btn" data-close-modal>取消</button>
+        <button id="btn-confirm-import-curve" class="btn btn-primary">导入</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: confirm -->
+  <div id="modal-confirm" class="modal hidden">
+    <div class="modal-box">
+      <h3 id="confirm-title">确认</h3>
+      <p id="confirm-text"></p>
+      <div class="btn-row right">
+        <button class="btn" data-close-modal>取消</button>
+        <button id="btn-confirm-yes" class="btn btn-danger">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: help manual -->
+  <div id="modal-help" class="modal hidden">
+    <div class="modal-box wide manual-modal">
+      <div class="manual-modal-head">
+        <h3>📖 用户操作手册</h3>
+        <span id="manual-modal-meta" class="muted"></span>
+        <button class="btn btn-small" data-close-modal>关闭</button>
+      </div>
+      <div id="manual-modal-body" class="manual-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Overlay: restarting -->
+  <div id="overlay-restarting" class="overlay hidden">
+    <div class="overlay-box">
+      <div class="spinner"></div>
+      <h3>正在重启服务…</h3>
+      <p>后端进程已在后台重新拉起，页面将自动重连（约 3~5 秒）。</p>
+    </div>
+  </div>
+
+  <!-- Overlay: stopped -->
+  <div id="overlay-stopped" class="overlay hidden">
+    <div class="overlay-box">
+      <h3>服务已停止</h3>
+      <p>后端进程已退出，本页面已无法继续操作。</p>
+      <p class="muted">在本机重新启动：</p>
+      <pre class="code-hint">cd F:\MIMO-Space\PEQ-WebUI
+.\start-webui.ps1</pre>
+      <p class="muted">或双击 <code>启动PEQ-WebUI.cmd</code>，然后刷新本页面。</p>
+      <div class="btn-row right">
+        <button id="btn-stopped-close" class="btn">知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+  <script src="manual.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

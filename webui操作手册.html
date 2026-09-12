@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PEQ WebUI 操作手册</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --line: #e5e7eb;
+      --warn: #b45309;
+      --warn-bg: #fffbeb;
+      --ok: #047857;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.65;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 28px 18px 64px;
+    }
+    header.hero {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 28px 28px 22px;
+      margin-bottom: 20px;
+    }
+    header.hero h1 {
+      margin: 0 0 8px;
+      font-size: 1.75rem;
+      letter-spacing: 0.02em;
+    }
+    header.hero p { margin: 0; color: var(--muted); }
+    .badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.85rem;
+    }
+    nav.toc {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    nav.toc strong { display: block; margin-bottom: 8px; }
+    nav.toc ol { margin: 0; padding-left: 1.25rem; columns: 2; column-gap: 24px; }
+    nav.toc a { color: var(--accent); text-decoration: none; }
+    nav.toc a:hover { text-decoration: underline; }
+    details.sec {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    details.sec > summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 14px 18px;
+      font-weight: 600;
+      background: linear-gradient(0deg, var(--accent-soft), var(--accent-soft));
+      border-bottom: 1px solid transparent;
+    }
+    details.sec > summary::-webkit-details-marker { display: none; }
+    details.sec[open] > summary {
+      border-bottom-color: var(--line);
+      background: #dbeafe;
+    }
+    details.sec .body { padding: 8px 18px 18px; }
+    h2 { font-size: 1.15rem; margin: 0; }
+    h3 { font-size: 1rem; margin: 18px 0 8px; }
+    code, pre {
+      font-family: Consolas, "Cascadia Code", monospace;
+      font-size: 0.9rem;
+    }
+    code {
+      background: #f3f4f6;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 12px 14px;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 14px;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f9fafb; }
+    .warn {
+      background: var(--warn-bg);
+      border: 1px solid #fcd34d;
+      color: var(--warn);
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    .ok { color: var(--ok); font-weight: 600; }
+    ul { padding-left: 1.2rem; }
+    footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    @media (max-width: 640px) {
+      nav.toc ol { columns: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>PEQ WebUI 操作手册</h1>
+      <p>EqualizerAPO 本地调音台 · 浏览器编辑预设 · 一键激活系统 EQ</p>
+      <span class="badge">端口 127.0.0.1:9100 · 日常无需管理员</span>
+    </header>
+
+    <nav class="toc">
+      <strong>目录</strong>
+      <ol>
+        <li><a href="#start">启动</a></li>
+        <li><a href="#status">页面与状态</a></li>
+        <li><a href="#preset">新建 / 激活预设</a></li>
+        <li><a href="#edit">编辑 EQ</a></li>
+        <li><a href="#autofit">自动拟合与 AutoEq</a></li>
+        <li><a href="#save">保存与直通</a></li>
+        <li><a href="#files">文件位置</a></li>
+        <li><a href="#takeover">首次接管</a></li>
+        <li><a href="#faq">常见问题</a></li>
+      </ol>
+    </nav>
+
+    <details class="sec" id="start" open>
+      <summary>1. 启动</summary>
+      <div class="body">
+        <h3>方式一：双击</h3>
+        <pre>F:\MIMO-Space\PEQ-WebUI\启动PEQ-WebUI.cmd</pre>
+        <h3>方式二：PowerShell</h3>
+        <pre>cd F:\MIMO-Space\PEQ-WebUI
+.\start-webui.ps1</pre>
+        <p>或：</p>
+        <pre>py mixer_web.py --port 9100</pre>
+        <p>浏览器打开 <code>http://127.0.0.1:9100/</code>。</p>
+        <div class="warn">
+          启动脚本<strong>不会</strong>自动 UAC 提权。只有首次把 APO 配置从
+          <code>C:\Program Files\EqualizerAPO\config</code> 迁到项目内时，才需要一次管理员操作（见第 8 节）。
+          详细安装坑见《部署手册.md》。
+        </div>
+      </div>
+    </details>
+
+    <details class="sec" id="status">
+      <summary>2. 页面与状态</summary>
+      <div class="body">
+        <p>顶部状态通常包括：</p>
+        <ul>
+          <li>APO 已安装 / 未安装</li>
+          <li>配置已托管 / 未接管</li>
+          <li>设备挂载检测（如 FiiO）</li>
+          <li>管理员模式 / 普通模式</li>
+          <li>当前激活预设 / 直通</li>
+        </ul>
+        <h3>右上角操作</h3>
+        <table>
+          <tr><th>按钮</th><th>作用</th></tr>
+          <tr><td>❓ 帮助</td><td>在页面内调出用户手册</td></tr>
+          <tr><td>重启服务</td><td>重启后端，约数秒后自动刷新</td></tr>
+          <tr><td>停止服务</td><td>停止后端；需在本机重新执行启动脚本</td></tr>
+        </table>
+        <h3>常用区域</h3>
+        <ul>
+          <li><strong>预设卡片</strong>：单击选中，双击激活；可重命名、删除、拖拽排序；<code>pure</code> 固定置顶</li>
+          <li><strong>曲线图</strong>：Raw / Target / EQ / Equalized；拖点改频率与增益，滚轮调 Q，双击空白加 PK</li>
+          <li><strong>EQ 表格 / 手动滑块</strong>：精确改类型、频率、增益、Q</li>
+          <li><strong>目标曲线下拉</strong>：Harman / 扩散场 / 平直 / 自定义；选择会写入当前预设</li>
+          <li><strong>自动拟合开关</strong>：换目标/设备时自动拟合并填入草稿</li>
+          <li><strong>底部</strong>：保存到预设 / 保存后立即激活 / 放弃草稿 / 撤销上次保存</li>
+        </ul>
+        <h3>测量 rig（同一耳机多版本）</h3>
+        <p>
+          下拉框会按数据源与 rig 标出多版本（oratory / RTINGS / 711 / 5128 等）。
+          默认推荐 <span class="ok">oratory1990</span>。设备 rig 与目标 rig 不同族时会黄色警告，高频结果仅供参考。
+        </p>
+      </div>
+    </details>
+
+    <details class="sec" id="preset">
+      <summary>3. 新建与激活预设</summary>
+      <div class="body">
+        <h3>新建</h3>
+        <ol>
+          <li>点击「+ 新增预设」</li>
+          <li>输入名称，可选绑定设备</li>
+          <li>创建后进入空预设（默认 Preamp 约 -6 dB）</li>
+        </ol>
+        <h3>激活（试听）</h3>
+        <ol>
+          <li>单击卡片选中</li>
+          <li><strong>双击</strong>激活并写入 APO</li>
+          <li>APO 检测 <code>hl-active.txt</code> 变化后实时生效</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="sec" id="edit">
+      <summary>4. 编辑 EQ</summary>
+      <div class="body">
+        <h3>加频点</h3>
+        <ul>
+          <li>点「+ 添加频段」</li>
+          <li>曲线空白处双击加 PK；拖点改频率/增益；滚轮改 Q</li>
+          <li>「导入EQ」粘贴 EqualizerAPO / AutoEq / CSV / JSON 文本后解析并采用草稿</li>
+        </ul>
+        <h3>风险提示</h3>
+        <p>底部会提示增益是否偏高，并给出 Preamp 建议，避免削波。</p>
+      </div>
+    </details>
+
+    <details class="sec" id="autofit">
+      <summary>5. 自动拟合与 AutoEq 库</summary>
+      <div class="body">
+        <h3>自动拟合</h3>
+        <ol>
+          <li>选择目标曲线（如 Harman 头戴 2018）</li>
+          <li>打开「自动拟合」或在拟合页设置滤波器数、频带、最大增益/Q 后预览</li>
+          <li>采用为草稿，再保存</li>
+        </ol>
+        <p>快速算法仅需 numpy；安装 scipy 且 AutoEq 就绪时可使用精确引擎。</p>
+        <h3>AutoEq 本地库</h3>
+        <ul>
+          <li>「导入原始频响为目标」：把另一副耳机 raw 作为目标</li>
+          <li>「设备+PEQ」：导入 raw + 预计算 PEQ 到当前预设</li>
+        </ul>
+        <div class="warn">
+          需要本机存在 AutoEq 数据目录。默认查找
+          <code>F:\MIMO-Space\AutoEq-4.1.2\AutoEq-4.1.2</code>，
+          可用环境变量 <code>AUTOEQ_ROOT</code> 覆盖。
+        </div>
+      </div>
+    </details>
+
+    <details class="sec" id="save">
+      <summary>6. 保存、激活与直通</summary>
+      <div class="body">
+        <table>
+          <tr><th>动作</th><th>结果</th></tr>
+          <tr><td>保存到预设</td><td>写入 <code>apo-presets\&lt;id&gt;.txt</code>；若当前已激活则同步激活文件</td></tr>
+          <tr><td>保存后立即激活</td><td>写入预设并复制到 <code>apo-config\hl-active.txt</code></td></tr>
+          <tr><td>放弃草稿</td><td>丢弃未保存修改</td></tr>
+          <tr><td>撤销上次保存</td><td>从本地 history 恢复上一版（上限约 20 条）</td></tr>
+          <tr><td>激活 <code>pure</code> / 直通</td><td><code>hl-active.txt</code> 写为仅注释，系统声音恢复直通</td></tr>
+        </table>
+        <p>编辑<strong>未激活</strong>预设时只写仓库文件，不影响当前声音。</p>
+      </div>
+    </details>
+
+    <details class="sec" id="files">
+      <summary>7. 文件位置</summary>
+      <div class="body">
+        <table>
+          <tr><th>内容</th><th>路径</th></tr>
+          <tr><td>项目根</td><td><code>F:\MIMO-Space\PEQ-WebUI\</code></td></tr>
+          <tr><td>预设文件</td><td><code>apo-presets\*.txt</code></td></tr>
+          <tr><td>预设清单 / 排序</td><td><code>apo-presets\presets.json</code> / <code>preset-order.json</code></td></tr>
+          <tr><td>激活文件</td><td><code>apo-config\hl-active.txt</code></td></tr>
+          <tr><td>APO 总配置</td><td><code>apo-config\config.txt</code></td></tr>
+          <tr><td>曲线</td><td><code>curves\devices\</code> · <code>curves\targets\</code></td></tr>
+          <tr><td>AutoEq 库</td><td>默认 <code>..\AutoEq-4.1.2\AutoEq-4.1.2</code></td></tr>
+          <tr><td>日志</td><td><code>peq-webui.log</code> / <code>peq-webui.err.log</code></td></tr>
+        </table>
+      </div>
+    </details>
+
+    <details class="sec" id="takeover">
+      <summary>8. 首次接管（仅未托管时）</summary>
+      <div class="body">
+        <p>若顶部显示「配置未托管」，说明 APO 仍读 Program Files 原配置。用<strong>管理员 PowerShell</strong> 执行一次：</p>
+        <pre>cd F:\MIMO-Space\PEQ-WebUI
+py -c "from apo_backend import ApoBackend; a=ApoBackend(); a.set_auto_install_enabled(True); print(a.install(by='admin'))"</pre>
+        <p>完成后刷新页面，状态应变为「配置已托管」。之后日常使用不再需要管理员。</p>
+        <div class="warn">
+          接管会改写 <code>config.txt</code> 并可能修改注册表 <code>ConfigPath</code>。
+          回滚、Peace 共存、设备挂载等细节见《部署手册.md》。
+        </div>
+      </div>
+    </details>
+
+    <details class="sec" id="faq">
+      <summary>9. 常见问题</summary>
+      <div class="body">
+        <table>
+          <tr><th>问题</th><th>处理</th></tr>
+          <tr><td>页面打不开</td><td>是否已启动；端口 9100 是否被占用；看 err.log</td></tr>
+          <tr><td>一直未托管</td><td>按第 8 节管理员接管；检查注册表 ConfigPath</td></tr>
+          <tr><td>激活了但没声音变化</td><td>设备是否挂载 APO；是否激活了 pure；播放器是否独占设备</td></tr>
+          <tr><td>AutoEq 搜不到</td><td>检查 <code>AUTOEQ_ROOT</code> 与 <code>results\</code></td></tr>
+          <tr><td>精确拟合不可用</td><td><code>py -m pip install scipy</code>；确认 AutoEq 下有 <code>autoeq\peq.py</code></td></tr>
+          <tr><td>想彻底回退</td><td>见《部署手册.md》§7 卸载/回滚</td></tr>
+        </table>
+      </div>
+    </details>
+
+    <footer>
+      PEQ WebUI 独立项目 · 详细契约见《开发维护文档.md》 · 安装坑见《部署手册.md》
+    </footer>
+  </div>
+</body>
+</html>

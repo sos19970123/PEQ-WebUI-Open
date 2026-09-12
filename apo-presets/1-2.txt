@@ -1,0 +1,36 @@
+# name: R70X ·HD490PRO拟合（调整后）
+# device: r70x
+# target: sennheiser-hd-490-pro-原始频响
+# fit: {"fmin":100,"fmax":12000,"max_gain_db":12,"max_q":6,"engine":"quick","auto_shelf":false,"hi_fidelity":false,"smooth":false,"sharpness_penalty":false}
+# ui_state: {"auto_fit_enabled":true,"legend":{"device":true,"target":true,"eq":true,"equalized":true,"applied":false,"draft":false,"preview":false}}
+# note: 整体更亮，降低氛围感，增加解析感
+# note: 2026-09-11 跨 rig 去假差微调(实测:HD490 目标=Rtings/HMS II.3;设备 R70X=oratory GRAS 45BC-10;同机两 rig 实测差 9-14k rms 6.55dB/峰 11.5dB ≈ 原修正量 5.97dB,该段不可验证):
+# note: - 8.59k +2.5→+1.25 / 9.23k +2.5→+1.25 / 10.30k +0.78→+0.39(整段减半:保留一半空气感,砍掉一半 Rtings rig 抬高,该 rig 对 9-14k 系统性读高约 2.9dB)
+# note: - 3-9k 未动(真实差 6.8-7.9dB 远大于 rig 噪声 1.6-2.7dB,可信)
+# note: - Filter 7(1844Hz -3.38)维持 OFF;preamp 不变 -8.7697
+# note: - 后续:仍觉亮/毛刺 → 三段清零;空气感不足 → 恢复原值
+# generated: 2026-09-11T20:17:04 by mixer_web
+
+Device: Fiio
+Preamp: -8.7697 dB
+
+Filter 1: ON PK Fc 101.6 Hz Gain 0.59 dB Q 2.569
+Filter 2: ON PK Fc 177.77 Hz Gain -0.34 dB Q 2.088
+Filter 3: ON PK Fc 301.19 Hz Gain 0.29 dB Q 2.428
+Filter 4: ON PK Fc 695.35 Hz Gain -0.62 dB Q 4
+Filter 5: ON PK Fc 856 Hz Gain 1.7 dB Q 0.8
+Filter 6: ON PK Fc 1484.63 Hz Gain -1.16 dB Q 2.696
+Filter 7: OFF PK Fc 1843.89 Hz Gain -3.38 dB Q 1.896
+Filter 8: ON PK Fc 2352.98 Hz Gain -1.07 dB Q 3.357
+Filter 9: ON PK Fc 2922.37 Hz Gain 0.74 dB Q 4
+Filter 10: ON PK Fc 3629.56 Hz Gain -1.84 dB Q 4
+Filter 11: ON PK Fc 4328.16 Hz Gain 4.23 dB Q 3.251
+Filter 12: ON PK Fc 4694.51 Hz Gain 0.86 dB Q 3.466
+Filter 13: ON PK Fc 5662.92 Hz Gain 0.28 dB Q 4
+Filter 14: ON PK Fc 6072.72 Hz Gain 1.88 dB Q 4
+Filter 15: ON PK Fc 6497.81 Hz Gain 2.89 dB Q 0.672
+Filter 16: ON PK Fc 7340.67 Hz Gain -2.26 dB Q 4
+Filter 17: ON PK Fc 8593.91 Hz Gain 1.25 dB Q 0.774
+Filter 18: ON PK Fc 9231.54 Hz Gain 1.25 dB Q 0.664
+Filter 19: ON PK Fc 10298.3 Hz Gain 0.39 dB Q 3.871
+Filter 20: ON LS Fc 35 Hz Gain 4.8 dB Q 0.75

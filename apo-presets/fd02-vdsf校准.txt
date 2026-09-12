@@ -1,0 +1,20 @@
+# name: FD02 VDSF校准
+# device: fd02
+# target: moondrop-vdsf
+# ui_state: {"auto_fit_enabled":false,"legend":{"device":true,"target":true,"eq":true,"equalized":true,"applied":false,"draft":false,"preview":false}}
+# note: 减少齿音
+# generated: 2026-08-30T12:30:04 by mixer_web
+
+Device: Fiio
+Preamp: -2.7114 dB
+
+Filter 1: ON PK Fc 232.86 Hz Gain -0.2 dB Q 0.974
+Filter 2: ON PK Fc 254.14 Hz Gain 1.33 dB Q 0.399
+Filter 3: ON LS Fc 285.78 Hz Gain -2.91 dB Q 0.7
+Filter 4: ON PK Fc 854.44 Hz Gain 1.87 dB Q 1.036
+Filter 5: ON PK Fc 1326.01 Hz Gain -1.79 dB Q 2.032
+Filter 6: ON PK Fc 3175.48 Hz Gain -5.28 dB Q 1.251
+Filter 7: ON PK Fc 4422.86 Hz Gain -5.8 dB Q 2.947
+Filter 8: ON PK Fc 7981.8 Hz Gain -6 dB Q 3
+Filter 9: ON HS Fc 8824.29 Hz Gain 2.5 dB Q 0.7
+Filter 10: ON PK Fc 10000 Hz Gain 2.5 dB Q 0.264
