@@ -31,9 +31,12 @@ from eq_parser import parse_eq
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_PRESET_DIR = os.path.join(BASE_DIR, 'apo-presets')
-DEFAULT_APO_SCOPE = 'Fiio'
+# 设备作用域：APO 在 Device 模式不匹配时会忽略其后所有滤波（见官方 Configuration reference）。
+# 默认用 'all' 恒匹配，避免无 FiiO 等特定设备名时 EQ 静默失效（部署坑 C1）。
+# 若只需作用于某一输出设备，可改成设备名片段（如 'Speakers'），或在预设里写 Device: 行。
+DEFAULT_APO_SCOPE = 'all'
 MANAGED_MARKER = '# Managed by peq-webui mixer_web.'
-# Legacy Managed marker kept only for recognition of older configs; not written anymore
+# 旧版 marker（headphone-lab 时代）仅作兼容识别，不再写入
 LEGACY_MANAGED_MARKER = '# Managed by headphone-lab mixer_web.'
 MANAGED_INCLUDE = 'Include: hl-active.txt'
 REGISTRY_KEY_PATH = r'SOFTWARE\EqualizerAPO'
@@ -757,14 +760,25 @@ class ApoBackend:
         return MANAGED_MARKER in text or LEGACY_MANAGED_MARKER in text
 
     def is_mounted_fiio(self):
-        for fname in os.listdir(self.preset_dir) if os.path.isdir(self.preset_dir) else []:
-            if not fname.lower().endswith('.txt'):
-                continue
-            if fname in ('hl-active.txt', 'config.txt'):
-                continue
-            text = _read_text(os.path.join(self.preset_dir, fname))
-            if text and 'Device: Fiio' in text:
-                return True
+        """兼容旧字段名 mounted_fiio：检测预设是否带有可匹配的 Device 作用域。
+
+        Device: all 恒匹配；带具体名字时按子串在预设里出现即视为已写作用域。
+        真实挂载仍以 Equalizer Configurator / 注册表 FxProperties 为准。
+        """
+        if os.path.isdir(self.preset_dir):
+            for fname in os.listdir(self.preset_dir):
+                if not fname.lower().endswith('.txt'):
+                    continue
+                if fname in ('hl-active.txt', 'config.txt'):
+                    continue
+                text = _read_text(os.path.join(self.preset_dir, fname))
+                if not text:
+                    continue
+                if 'Device: all' in text:
+                    return True
+                # 兼容历史 FiiO 作用域及其它 Device 行
+                if re.search(r'(?im)^Device:\s*\S', text):
+                    return True
         return False
 
     def is_elevated(self):

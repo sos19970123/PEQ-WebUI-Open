@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 import_measurement_variants.py - 从本地 AutoEq 测量库导入设备频响的多个 rig 版本
 
@@ -15,9 +15,9 @@ import_measurement_variants.py - 从本地 AutoEq 测量库导入设备频响的
     PEWEBUI_DIR  peq-webui 目录（默认本文件所在目录的上级）
 
 生成的文件（同一设备多个版本全部列出）:
-    DT 900 Pro X   dt900prox[.json]  dt900prox-rtings  dt900prox-superreview  dt900prox-kuulokenurkka
-    ATH-R70X       r70x[.json]       r70x-rtings       r70x-innerfidelity     r70x-kuulokenurkka
-                   r70x-auriculares-argentina
+    Sample Over-Ear   sample-over-ear[.json]  sample-over-ear-rtings  sample-over-ear-superreview  sample-over-ear-kuulokenurkka
+    Sample Open       sample-open[.json]       sample-open-rtings       sample-open-innerfidelity     sample-open-kuulokenurkka
+                   sample-open-auriculares-argentina
     （id 不带 -source 的为默认/推荐版本 = oratory1990，保持与历史预设的 device_id 兼容）
 """
 import csv
@@ -33,26 +33,7 @@ AUTOEQ_ROOT = os.environ.get(
 DEVICES_DIR = os.path.join(BASE_DIR, 'curves', 'devices')
 
 # 设备英文名 -> (id 前缀, 中文名, kind, AutoEq 测量文件相对路径)
-DEVICES = [
-    ('dt900prox', '拜亚动力 DT 900 Pro X', 'headphone',
-     'measurements/oratory1990/data/over-ear/Beyerdynamic DT 900 Pro X.csv'),
-    ('dt900prox-rtings', '拜亚动力 DT 900 Pro X', 'headphone',
-     'measurements/Rtings/data/over-ear/Beyerdynamic DT 900 Pro X.csv'),
-    ('dt900prox-superreview', '拜亚动力 DT 900 Pro X', 'headphone',
-     'measurements/Super Review/data/over-ear/Beyerdynamic DT 900 Pro X.csv'),
-    ('dt900prox-kuulokenurkka', '拜亚动力 DT 900 Pro X', 'headphone',
-     'measurements/Kuulokenurkka/data/over-ear/Beyerdynamic DT 900 Pro X.csv'),
-    ('r70x', '铁三角 ATH-R70X', 'headphone',
-     'measurements/oratory1990/data/over-ear/Audio-Technica ATH-R70x.csv'),
-    ('r70x-rtings', '铁三角 ATH-R70X', 'headphone',
-     'measurements/Rtings/data/over-ear/Audio-Technica ATH-R70x.csv'),
-    ('r70x-innerfidelity', '铁三角 ATH-R70X', 'headphone',
-     'measurements/Innerfidelity/data/over-ear/Audio-Technica ATH-R70x.csv'),
-    ('r70x-kuulokenurkka', '铁三角 ATH-R70X', 'headphone',
-     'measurements/Kuulokenurkka/data/over-ear/Audio-Technica ATH-R70x.csv'),
-    ('r70x-auriculares-argentina', '铁三角 ATH-R70X', 'headphone',
-     'measurements/Auriculares Argentina/data/over-ear/Audio-Technica ATH-R70x.csv'),
-]
+DEVICES = []  # public repo: add your own AutoEq measurement paths here
 
 # source -> rig 元数据（rig 值取自 AutoEq measurements/<source>/name_index.tsv 的 rig 列）
 RIG_META = {

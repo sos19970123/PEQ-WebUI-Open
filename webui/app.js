@@ -540,7 +540,7 @@ function renderApoBadges() {
   cls = 'badge ' + (info.managed ? 'ok' : 'warn');
   parts.push('<span class="' + cls + '">' + (info.managed ? '配置已托管' : '未接管') + '</span>');
   cls = 'badge ' + (info.mounted_fiio ? 'ok' : 'warn');
-  parts.push('<span class="' + cls + '">FiiO ' + (info.mounted_fiio ? '已挂载' : '未检测到挂载') + '</span>');
+  parts.push('<span class="' + cls + '">Device ' + (info.mounted_fiio ? '作用域已写入' : '未写入作用域') + '</span>');
   const isElevated = !!info.elevated;
   parts.push('<span class="badge ' + (isElevated ? 'ok' : 'warn') + '">' + (isElevated ? '管理员模式' : '普通模式') + '</span>');
   if (info.active_preset_id) {

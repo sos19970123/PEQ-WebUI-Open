@@ -6,6 +6,7 @@
 
 不依赖 pytest；只用标准库 + 项目模块。断言失败会抛 AssertionError。
 """
+import json
 import os
 import shutil
 import sys
@@ -20,15 +21,15 @@ from curve_store import CurveStore  # noqa: E402
 from eq_parser import parse_eq  # noqa: E402
 from rig_guard import check_cross_rig  # noqa: E402
 
-SAMPLE_PRESET = """# name: R70X · HD490PRO 拟合
-# device: r70x
-# target: sennheiser-hd-490-pro-原始频响
+SAMPLE_PRESET = """# name: Example · Sample Fit
+# device: sample-device
+# target: sample-target
 # fit: {"fmin":100,"fmax":12000}
 # ui_state: {"auto_fit_enabled":true}
-# note: 原笔记
+# note: original note
 # generated: 2020-01-01T00:00:00 by mixer_web
 
-Device: Fiio
+Device: all
 Preamp: -8.5 dB
 
 __BANDS__
@@ -69,15 +70,15 @@ def test_update_preset_meta_preserves_filters():
             f.write(SAMPLE_PRESET.replace('__BANDS__', make_bands(20)))
         be = ApoBackend(preset_dir=preset_dir, config_dir=config_dir)
         before = open(path, encoding='utf-8').read()
-        updated = be.update_preset_meta('1-2', notes='新笔记 A\n新笔记 B')
+        updated = be.update_preset_meta('1-2', notes='note A\nnote B')
         assert updated is not None
         assert len(updated['bands']) == 21, len(updated['bands'])
         after = open(path, encoding='utf-8').read()
         assert count_filters(after) == 21, count_filters(after)
         assert 'Filter 7: OFF' in after, 'Filter 7 的 OFF 状态被改坏'
         assert 'Preamp: -8.5 dB' in after, 'Preamp 被改坏'
-        assert 'Device: Fiio' in after, 'Device 行被改坏'
-        assert '新笔记 A' in after and '原笔记' not in after
+        assert 'Device: all' in after, 'Device 行被改坏'
+        assert 'note A' in after and 'original note' not in after
         assert '# fit: {"fmin":100,"fmax":12000}' in after, '# fit 被丢失'
         assert '# ui_state: {"auto_fit_enabled":true}' in after, '# ui_state 被丢失'
         before_filter_lines = [l for l in before.splitlines() if l.startswith('Filter ')]
@@ -154,7 +155,7 @@ def test_metadata_interfaces_preserve_bands():
 
         # 四个元数据接口路径均只改元数据；这里用同一后端方法覆盖 notes/device/target/rename
         cases = [
-            ('notes', {'notes': '新笔记 A\n新笔记 B'}),
+            ('notes', {'notes': 'note A\nnote B'}),
             ('device', {'device_id': 'new-device'}),
             ('target', {'target_id': 'new-target'}),
             ('rename', {'name': 'New Name'}),
@@ -194,29 +195,42 @@ def test_auto_preamp_on_save():
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+def _write_json(path, obj):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(obj, f, ensure_ascii=False)
+
+
 def test_rig_guard():
-    cs = CurveStore()
-    dev = cs.get_device('r70x')
-    cross_target = cs.get_target('sennheiser-hd-490-pro-原始频响')
-    same_target = cs.get_target('audio-technica-ath-r70xa-target')
-    r1 = check_cross_rig(dev, cross_target)
-    assert r1['cross'] is True and r1['unknown'] is False, r1
-    assert '9kHz' in r1['warnings'][0]
-    r2 = check_cross_rig(dev, same_target)
-    assert r2['cross'] is False and r2['unknown'] is False, r2
-    print('[ok] check_cross_rig 跨 rig / 同 rig 判定正确')
-
-
-def test_rig_diff():
-    cs = CurveStore()
-    diff = cs.rig_diff('r70x', rig_from='Rtings HMS II.3', rig_to='oratory1990 GRAS 45BC-10')
-    assert diff is not None
-    assert diff['from_id'] == 'r70x-rtings', diff['from_id']
-    assert diff['to_id'] == 'r70x'
-    assert len(diff['points']) >= 100
-    hi = [p[1] for p in diff['points'] if 9000 <= p[0] <= 14000]
-    assert hi and abs(sum(hi) / len(hi)) > 1.0, '9-14k 应有明显 rig 差'
-    print('[ok] rig_diff 能算出同型号双 rig 实测差')
+    tmp = tempfile.mkdtemp(prefix='peq_rig_test_')
+    try:
+        curves = os.path.join(tmp, 'curves')
+        pts_a = [[20, 0], [100, 0], [1000, 0], [9000, 0], [20000, 0]]
+        pts_b = [[20, 1], [100, 1], [1000, 1], [9000, 3], [20000, 3]]
+        _write_json(os.path.join(curves, 'devices', 'sample-a.json'), {
+            'id': 'sample-a', 'name': 'Sample A', 'kind': 'headphone', 'source': 'oratory1990',
+            'rig': 'GRAS 45BC-10', 'rig_family': 'KEMAR HATS', 'points': pts_a,
+        })
+        _write_json(os.path.join(curves, 'targets', 'sample-cross.json'), {
+            'id': 'sample-cross', 'name': 'Sample Cross', 'kind': 'target',
+            'rig': 'IEC 60318-4 (711)', 'rig_family': '711 coupler', 'points': pts_b,
+        })
+        _write_json(os.path.join(curves, 'targets', 'sample-same.json'), {
+            'id': 'sample-same', 'name': 'Sample Same', 'kind': 'target',
+            'rig': 'Harman over-ear 2018', 'rig_family': 'KEMAR HATS', 'points': pts_a,
+        })
+        cs = CurveStore(curves_dir=curves)
+        dev = cs.get_device('sample-a')
+        cross_target = cs.get_target('sample-cross')
+        same_target = cs.get_target('sample-same')
+        assert dev and cross_target and same_target
+        r1 = check_cross_rig(dev, cross_target)
+        assert r1['cross'] is True and r1['unknown'] is False, r1
+        r2 = check_cross_rig(dev, same_target)
+        assert r2['cross'] is False and r2['unknown'] is False, r2
+        print('[ok] check_cross_rig 跨 rig / 同 rig 判定正确')
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
 
 
 def main():
@@ -226,9 +240,9 @@ def main():
     test_metadata_interfaces_preserve_bands()
     test_auto_preamp_on_save()
     test_rig_guard()
-    test_rig_diff()
     print('\n全部自检通过')
 
 
 if __name__ == '__main__':
     main()
+

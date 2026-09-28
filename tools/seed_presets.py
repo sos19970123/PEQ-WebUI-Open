@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 seed_presets.py - 首跑播种（幂等，已存在则跳过）
 
@@ -16,13 +16,12 @@ from apo_backend import ApoBackend, render_preset
 from autofit import autofit
 from curve_store import CurveStore
 
+# 通用示例种子（非个人设备）。按本机曲线库自动拟合；无曲线则空预设。
+# 迁移/新机请按实际耳机改写 SEEDS，勿提交个人型号到公开仓。
 SEEDS = [
-    ('dt900prox-harman', 'DT900 Pro X · Harman 校准', 'dt900prox', 'harman_overear_2018'),
-    ('r70x-harman', 'R70X · Harman 校准', 'r70x', 'harman_overear_2018'),
-    ('fd02-harman', 'FD02 · Harman 入耳校准', 'fd02', 'harman_in-ear_2019'),
-    ('e40-harman', 'E40 · Harman 入耳校准', 'e40', 'harman_in-ear_2019'),
-    ('xlm-harman', '小蓝帽 · Harman 入耳校准', 'xlm', 'harman_in-ear_2019'),
-    ('t100-flat', '创新 T100 · 平直', 't100', 'flat'),
+    ('example-harman-oe', '示例 · 头戴 Harman', 'sample-over-ear', 'harman_overear_2018'),
+    ('example-harman-ie', '示例 · 入耳 Harman', 'fd02', 'harman_in-ear_2019'),
+    ('example-flat', '示例 · 平直', None, 'flat'),
 ]
 
 
@@ -33,7 +32,7 @@ def main():
     for preset_id, display_name, device_id, target_id in SEEDS:
         if apo.get_preset(preset_id) is not None:
             continue
-        device = curves.get_device(device_id) or {}
+        device = curves.get_device(device_id) or {} if device_id else {}
         target = curves.get_target(target_id) or {}
         src = device.get('points') or []
         tgt = target.get('points') or []
@@ -50,8 +49,8 @@ def main():
             bands,
             preamp,
             name=display_name,
-            device_id=device_id,
-            device_scope='Fiio',
+            device_id=device_id or '',
+            device_scope='all',
             generated_by='seed_presets',
         )
         path = os.path.join(apo.preset_dir, preset_id + '.txt')

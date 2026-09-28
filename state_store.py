@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 state_store.py - WebUI 本地编辑状态（按 preset id 存储）
 
@@ -92,5 +92,5 @@ class StateStore:
 
 if __name__ == '__main__':
     s = StateStore(path=os.path.join(os.environ.get('TEMP', '.'), 'mixer-state-test.json'))
-    s.set_applied('dt900prox-harman', [], 0)
-    print(s.get_applied('dt900prox-harman'))
+    s.set_applied('example-fit', [], 0)
+    print(s.get_applied('example-fit'))

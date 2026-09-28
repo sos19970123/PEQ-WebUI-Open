@@ -6,7 +6,7 @@ curve_store.py - 本地曲线库（设备原始频响 / 目标曲线）
 - 目录: curves/devices/*.json, curves/targets/*.json
 - 热加载: 每次列表/读取重新扫描目录；单文件用 mtime 做内容缓存。
 - 用户可手写 JSON 扩充；无需重启后端。
-- 内置 6 台设备元数据在无曲线文件时仍出现在设备列表中。
+- 公开仓不附带个人设备曲线；导入后即可在设备列表中出现。
 """
 import json
 import math
@@ -22,14 +22,8 @@ CURVES_DIR = os.path.join(BASE_DIR, 'curves')
 DEVICES_DIR = os.path.join(CURVES_DIR, 'devices')
 TARGETS_DIR = os.path.join(CURVES_DIR, 'targets')
 
-BUILTIN_DEVICES = [
-    {"id": "r70x", "name": "铁三角 ATH-R70X", "kind": "headphone", "source": "oratory1990", "points": []},
-    {"id": "dt900prox", "name": "拜亚动力 DT 900 Pro X", "kind": "headphone", "source": "oratory1990", "points": []},
-    {"id": "t100", "name": "创新 T100", "kind": "speaker", "source": "manual/local", "points": []},
-    {"id": "fd02", "name": "JVC HA-FD02", "kind": "iem", "source": "crinacle", "points": []},
-    {"id": "e40", "name": "铁三角 ATH-E40", "kind": "iem", "source": "crinacle", "points": []},
-    {"id": "xlm", "name": "原道小蓝帽", "kind": "earbud", "source": "manual/local", "points": []},
-]
+# 公开仓不内置个人设备。示例设备由 curves/devices/*.json 导入后出现在列表。
+BUILTIN_DEVICES = []
 
 BUILTIN_TARGETS = [
     {"id": "harman_overear_2018", "name": "Harman 头戴 2018", "kind": "target", "category": "common", "points": []},

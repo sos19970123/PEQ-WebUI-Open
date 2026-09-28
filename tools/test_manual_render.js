@@ -47,7 +47,7 @@ check('行内代码存在', html.includes('<code>'));
 check('粗体存在', html.includes('<strong>'));
 
 /* 关键难例：列表项内嵌围栏代码（§2 页面说明的三条按钮项） */
-check('列表项内嵌代码块', /<li>(?:(?!<\/li>)[\s\S])*<pre><code>cd F:\\Hermes-Deepseek/.test(html));
+check('列表项内嵌代码块', /<li>(?:(?!<\/li>)[\s\S])*<pre><code>cd path/to/PEQ-WebUI/.test(html));
 /* 关键难例：行尾粘连水平线 “…管理员权限。---”（§10 结尾）应渲染为 段落+hr，而非列表 */
 check('粘连 --- 渲染为段落+分隔线', /不再需要管理员权限。<\/p><hr>/.test(html));
 /* 关键难例：嵌套无序列表（§11.9 “10k 后的峰”表在列表内） */
